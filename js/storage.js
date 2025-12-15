@@ -1,6 +1,10 @@
-// storage.js - Manajemen Storage
-const StorageManager = {
-  // Get item dari storage
+// storage.js - Storage Manager
+const Storage = {
+  /**
+   * Get item from storage
+   * @param {string} key - Storage key
+   * @returns {any} Parsed value or null
+   */
   get(key) {
     try {
       const item = sessionStorage.getItem(key);
@@ -11,7 +15,11 @@ const StorageManager = {
     }
   },
 
-  // Set item ke storage
+  /**
+   * Set item to storage
+   * @param {string} key - Storage key
+   * @param {any} value - Value to store
+   */
   set(key, value) {
     try {
       sessionStorage.setItem(key, JSON.stringify(value));
@@ -22,7 +30,10 @@ const StorageManager = {
     }
   },
 
-  // Remove item dari storage
+  /**
+   * Remove item from storage
+   * @param {string} key - Storage key
+   */
   remove(key) {
     try {
       sessionStorage.removeItem(key);
@@ -33,24 +44,33 @@ const StorageManager = {
     }
   },
 
-  // Get all files
+  /**
+   * Get all files from storage
+   * @returns {Array} Array of file objects sorted by timestamp
+   */
   getAllFiles() {
     try {
-      const keys = Object.keys(sessionStorage).filter(key => 
-        key.startsWith(CONFIG.storageKeys.filePrefix)
-      );
-      
-      return keys.map(key => this.get(key))
+      const keys = Object.keys(sessionStorage).filter(k => k.startsWith('file_'));
+      return keys
+        .map(k => this.get(k))
         .filter(file => file !== null)
-        .sort((a, b) => b.id - a.id);
+        .sort((a, b) => b.timestamp - a.timestamp);
     } catch (error) {
       console.error('Error getting all files:', error);
       return [];
     }
   },
 
-  // Clear all data
+  /**
+   * Clear all storage
+   */
   clearAll() {
-    sessionStorage.clear();
+    try {
+      sessionStorage.clear();
+      return true;
+    } catch (error) {
+      console.error('Error clearing storage:', error);
+      return false;
+    }
   }
 };

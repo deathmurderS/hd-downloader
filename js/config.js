@@ -12,7 +12,7 @@ const CONFIG = {
   },
   
   // Ukuran maksimal file (dalam MB) - opsional
-  maxFileSize: 500,
+  maxFileSize: 1000,
   
   // Storage keys
   storageKeys: {

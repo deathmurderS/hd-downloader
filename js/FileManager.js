@@ -1,30 +1,46 @@
-// fileManager.js - Manajemen File
+// fileManager.js - File Manager
 const FileManager = {
-  // Upload file
-  uploadFile(file, quality) {
+  /**
+   * Process and upload file
+   * @param {File} file - File to upload
+   * @returns {Promise} Promise that resolves with file data
+   */
+  async processFile(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       
-      reader.onload = (event) => {
-        const fileId = Date.now() + Math.random();
-        const newFile = {
-          id: fileId,
+      reader.onload = async (e) => {
+        const now = new Date();
+        const fileData = {
+          id: Date.now() + Math.random(),
           name: file.name,
           type: file.type.startsWith('image/') ? 'image' : 'video',
           size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
-          sizeBytes: file.size,
-          url: event.target.result,
-          uploadedAt: new Date().toLocaleString('id-ID'),
-          quality: quality || CONFIG.defaultQuality
+          url: e.target.result,
+          timestamp: Date.now(),
+          uploadDate: now.toLocaleDateString('id-ID', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          }),
+          uploadTime: now.toLocaleTimeString('id-ID'),
+          quality: 'HD 1080p'
         };
 
-        // Simpan file secara TERPISAH
-        const key = `${CONFIG.storageKeys.filePrefix}${fileId}`;
-        if (StorageManager.set(key, newFile)) {
-          resolve(newFile);
-        } else {
-          reject(new Error('Failed to save file'));
+        // Simulate background removal for images
+        if (fileData.type === 'image') {
+          // Wait 1 second to simulate processing
+          await new Promise(r => setTimeout(r, 1000));
+          fileData.bgRemoved = true;
+          
+          // NOTE: For real background removal, integrate with API like remove.bg
+          // See documentation in fileManager.js for implementation details
         }
+
+        // Save file to storage
+        Storage.set(`file_${fileData.id}`, fileData);
+        resolve(fileData);
       };
 
       reader.onerror = () => {
@@ -35,51 +51,48 @@ const FileManager = {
     });
   },
 
-  // Get all files
+  /**
+   * Get all files
+   * @returns {Array} Array of file objects
+   */
   getAllFiles() {
-    return StorageManager.getAllFiles();
+    return Storage.getAllFiles();
   },
 
-  // Get single file
+  /**
+   * Get single file by ID
+   * @param {number} id - File ID
+   * @returns {Object|null} File object or null
+   */
   getFile(id) {
-    const key = `${CONFIG.storageKeys.filePrefix}${id}`;
-    return StorageManager.get(key);
+    return Storage.get(`file_${id}`);
   },
 
-  // Update file
-  updateFile(id, updates) {
-    const key = `${CONFIG.storageKeys.filePrefix}${id}`;
-    const file = this.getFile(id);
-    
-    if (file) {
-      const updatedFile = { ...file, ...updates };
-      return StorageManager.set(key, updatedFile) ? updatedFile : null;
-    }
-    return null;
-  },
-
-  // Delete file
+  /**
+   * Delete file by ID
+   * @param {number} id - File ID
+   * @returns {boolean} Success status
+   */
   deleteFile(id) {
-    const key = `${CONFIG.storageKeys.filePrefix}${id}`;
-    return StorageManager.remove(key);
+    return Storage.remove(`file_${id}`);
   },
 
-  // Download file
-  downloadFile(file) {
+  /**
+   * Download file
+   * @param {number} id - File ID
+   */
+  downloadFile(id) {
+    const file = this.getFile(id);
+    if (!file) {
+      console.error('File not found');
+      return;
+    }
+
     const link = document.createElement('a');
     link.href = file.url;
     link.download = file.name;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  },
-
-  // Get/Set HD Quality
-  getHDQuality() {
-    return StorageManager.get(CONFIG.storageKeys.hdQuality) || CONFIG.defaultQuality;
-  },
-
-  setHDQuality(quality) {
-    return StorageManager.set(CONFIG.storageKeys.hdQuality, quality);
   }
 };

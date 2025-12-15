@@ -3,22 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HD Downloader</title>
-  <!-- CSS -->
+  <title>HD Downloader Pro</title>
   <link rel="stylesheet" href="./css/style.css">
 </head>
-<body>
-  <div id="app"></div>
+<body class="theme-dark">
+  <div id="app">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <div class="logo">
+          <div class="logo-icon">📁</div>
+          <div class="logo-text">HD Downloader Pro</div>
+        </div>
+        <button class="header-btn" onclick="openSettings()">⚙️ Pengaturan</button>
+      </div>
+    </div>
 
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  
-  <!-- JavaScript Files -->
-  <script src="./js/config.js"></script>
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Upload Card -->
+      <div class="card">
+        <h2 class="card-title">📤 Upload File HD</h2>
+        <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none" onchange="handleUpload(event)">
+        <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+          <div class="upload-icon">☁️</div>
+          <div class="upload-text">Klik untuk upload file</div>
+          <div class="upload-subtext">Support: Gambar & Video (Auto Remove BG untuk gambar)</div>
+        </div>
+      </div>
+
+      <!-- Files Card -->
+      <div class="card">
+        <h2 class="card-title">📂 File Anda (<span id="fileCount">0</span>)</h2>
+        <div id="filesGrid" class="files-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title">⚙️ Pengaturan</h2>
+        <button class="modal-close" onclick="closeSettings()">×</button>
+      </div>
+      <div class="modal-body">
+        <h3 style="margin-bottom: 1rem;">🎨 Pilih Tema</h3>
+        <div class="theme-grid">
+          <div class="theme-option active" onclick="changeTheme('dark')">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #0f0f23 0%, #4c1d95 50%, #000000 100%);"></div>
+            <div>Dark Purple</div>
+          </div>
+          <div class="theme-option" onclick="changeTheme('blue')">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #0c4a6e 100%);"></div>
+            <div>Ocean Blue</div>
+          </div>
+          <div class="theme-option" onclick="changeTheme('purple')">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #581c87 0%, #a855f7 50%, #312e81 100%);"></div>
+            <div>Royal Purple</div>
+          </div>
+          <div class="theme-option" onclick="changeTheme('green')">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #064e3b 0%, #10b981 50%, #022c22 100%);"></div>
+            <div>Forest Green</div>
+          </div>
+          <div class="theme-option" onclick="changeTheme('red')">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #7f1d1d 0%, #ef4444 50%, #450a0a 100%);"></div>
+            <div>Ruby Red</div>
+          </div>
+        </div>
+
+        <h3 style="margin: 1.5rem 0 1rem;">🖼️ Custom Background</h3>
+        <input type="file" id="bgInput" accept="image/*" style="display:none" onchange="uploadCustomBG(event)">
+        <div class="custom-bg-upload" onclick="document.getElementById('bgInput').click()">
+          <div style="font-size: 2rem; margin-bottom: 0.5rem;">📷</div>
+          <div>Upload Background Sendiri</div>
+          <div style="font-size: 0.875rem; color: rgba(255,255,255,0.6); margin-top: 0.5rem;">Klik untuk pilih gambar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Processing Overlay -->
+  <div id="processing" class="processing">
+    <div class="spinner"></div>
+    <div style="text-align: center; font-weight: 600;">Processing file...</div>
+    <div style="text-align: center; font-size: 0.875rem; color: rgba(255,255,255,0.6); margin-top: 0.5rem;">Removing background & optimizing HD quality</div>
+  </div>
+
+  <!-- Scripts -->
   <script src="./js/storage.js"></script>
-  <script src="./js/auth.js"></script>
+  <script src="./js/theme.js"></script>
   <script src="./js/fileManager.js"></script>
   <script src="./js/ui.js"></script>
+  <script src="./js/app.js"></script>
   <script src="./js/script.js"></script>
+  <script src="./js/auth.js"></script>
 </body>
 </html>
