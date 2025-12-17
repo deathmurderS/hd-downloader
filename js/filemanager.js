@@ -96,28 +96,3 @@ const FileManager = {
     document.body.removeChild(link);
   }
 };
-  if (fileData.type === 'image') {
-    try {
-      const formData = new FormData();
-      formData.append('image_file', file);
-      formData.append('size', 'auto');
-      
-      const response = await fetch('aDDrnL64Cg8zVmZcNwLgDnqe', {
-        method: 'POST',
-        headers: {
-          'X-Api-Key': 'aDDrnL64Cg8zVmZcNwLgDnqe'
-        },
-        body: formData
-      });
-      
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        fileData.url = url;
-        fileData.bgRemoved = true;
-      }
-    } catch (error) {
-      console.error('Background removal failed:', error);
-      // Keep original image if API fails
-    }
-  }
