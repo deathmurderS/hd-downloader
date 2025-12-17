@@ -51,13 +51,6 @@ body::before {
   z-index: 0;
 }
 
-.card {
-  background: rgba(20, 20, 40, 0.75);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-
 #app {
   position: relative;
   z-index: 1;
