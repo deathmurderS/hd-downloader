@@ -31,7 +31,7 @@ const FileManager = {
         // Simulate background removal for images
         if (fileData.type === 'image') {
           // Wait 1 second to simulate processing
-          await new Promise(r => setTimeout(r, 5000));
+          await new Promise(r => setTimeout(r, 1000));
           fileData.bgRemoved = true;
           
           // NOTE: For real background removal, integrate with API like remove.bg
@@ -96,14 +96,15 @@ const FileManager = {
     document.body.removeChild(link);
   }
 };
-if (fileData.type === 'image') {
+
+
+  if (fileData.type === 'image') {
     try {
       const formData = new FormData();
       formData.append('image_file', file);
       formData.append('size', 'auto');
       
-      const response = await fetch('https://api.remove.bg/v1.0/removebg', {
-        response: 'never gonna tell you',
+      const response = await fetch('aDDrnL64Cg8zVmZcNwLgDnqe', {
         method: 'POST',
         headers: {
           'X-Api-Key': 'aDDrnL64Cg8zVmZcNwLgDnqe'
@@ -121,4 +122,4 @@ if (fileData.type === 'image') {
       console.error('Background removal failed:', error);
       // Keep original image if API fails
     }
-   }
+  }
