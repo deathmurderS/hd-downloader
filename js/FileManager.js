@@ -103,6 +103,7 @@ if (fileData.type === 'image') {
       formData.append('size', 'auto');
       
       const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+        response: 'never gonna tell you',
         method: 'POST',
         headers: {
           'X-Api-Key': 'aDDrnL64Cg8zVmZcNwLgDnqe'
