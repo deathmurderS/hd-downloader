@@ -1,140 +1,56 @@
-// fileManager.js - File Manager
-const FileManager = {
-  /**
-   * Process and upload file
-   * @param {File} file - File to upload
-   * @returns {Promise} Promise that resolves with file data
-   */
-  async processFile(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+// fileManager.js
+async function processFile(file) {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const now = new Date();
+      const quality = Storage.get('quality') || '1080p';
       
-      reader.onload = async (e) => {
-        const now = new Date();
-        const fileData = {
-          id: Date.now() + Math.random(),
-          name: file.name,
-          type: file.type.startsWith('image/') ? 'image' : 'video',
-          size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
-          url: e.target.result,
-          timestamp: Date.now(),
-          uploadDate: now.toLocaleDateString('id-ID', { 
-            weekday: 'long', 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
-          }),
-          uploadTime: now.toLocaleTimeString('id-ID'),
-          quality: 'HD 1080p'
-        };
+      const fileData = {
+        id: Date.now() + Math.random(),
+        name: file.name,
+        type: file.type.startsWith('image/') ? 'image' : 'video',
+        size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
+        url: e.target.result,
+        timestamp: Date.now(),
+        uploadDate: now.toLocaleDateString('id-ID', { 
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+        }),
+        uploadTime: now.toLocaleTimeString('id-ID'),
+        quality: quality
+      };
+      
+      // Remove background untuk image
+      if (fileData.type === 'image') {
+        try {
+          // Kirim ke BACKEND kamu (bukan langsung ke remove.bg!)
+          const response = await fetch('/api/remove-bg', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              image: e.target.result.split(',')[1] // base64
+            })
+          });
 
-        // Simulate background removal for images
-        if (fileData.type === 'image') {
-          // Wait 1 second to simulate processing
-          await new Promise(r => setTimeout(r, 1000));
-          fileData.bgRemoved = true;
-          
-          // NOTE: For real background removal, integrate with API like remove.bg
-          // See documentation in fileManager.js for implementation details
+          if (response.ok) {
+            const blob = await response.blob();
+            fileData.url = URL.createObjectURL(blob);
+            fileData.bgRemoved = true;
+          } else {
+            console.error('Background removal failed');
+            // Tetap pakai gambar original
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          // Tetap pakai gambar original
         }
-
-        // Save file to storage
-        Storage.set(`file_${fileData.id}`, fileData);
-        resolve(fileData);
-      };
-
-      reader.onerror = () => {
-        reject(new Error('Failed to read file'));
-      };
-
-      reader.readAsDataURL(file);
-    });
-  },
-
-  /**
-   * Get all files
-   * @returns {Array} Array of file objects
-   */
-  getAllFiles() {
-    return Storage.getAllFiles();
-  },
-
-  /**
-   * Get single file by ID
-   * @param {number} id - File ID
-   * @returns {Object|null} File object or null
-   */
-  getFile(id) {
-    return Storage.get(`file_${id}`);
-  },
-
-  /**
-   * Delete file by ID
-   * @param {number} id - File ID
-   * @returns {boolean} Success status
-   */
-  deleteFile(id) {
-    return Storage.remove(`file_${id}`);
-  },
-
-  /**
-   * Download file
-   * @param {number} id - File ID
-   */
-  downloadFile(id) {
-    const file = this.getFile(id);
-    if (!file) {
-      console.error('File not found');
-      return;
-    }
-
-    const link = document.createElement('a');
-    link.href = file.url;
-    link.download = file.name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-};
-
-/**
- * INTEGRATION WITH REAL BACKGROUND REMOVAL API
- * 
- * To use real background removal API (e.g., remove.bg):
- * 
- * 1. Sign up at https://www.remove.bg/api
- * 2. Get your API key
- * 3. Replace the simulation code in processFile() with:
- * 
- * if (fileData.type === 'image') {
- *   try {
- *     const formData = new FormData();
- *     formData.append('image_file', file);
- *     formData.append('size', 'auto');
- *     
- *     const response = await fetch('https://api.remove.bg/v1.0/removebg', {
- *       method: 'POST',
- *       headers: {
- *         'X-Api-Key': 'YOUR_API_KEY_HERE'
- *       },
- *       body: formData
- *     });
- *     
- *     if (response.ok) {
- *       const blob = await response.blob();
- *       const url = URL.createObjectURL(blob);
- *       fileData.url = url;
- *       fileData.bgRemoved = true;
- *     }
- *   } catch (error) {
- *     console.error('Background removal failed:', error);
- *     // Keep original image if API fails
- *   }
- * }
- * 
- * Alternative free APIs:
- * - Pixian.AI: https://pixian.ai/api
- * - Slazzer: https://www.slazzer.com/api
- * 
- * Note: Most APIs have rate limits and require API keys
- */
+      }
+      
+      Storage.set(`file_${fileData.id}`, fileData);
+      resolve();
+    };
+    reader.readAsDataURL(file);
+  });
+}
