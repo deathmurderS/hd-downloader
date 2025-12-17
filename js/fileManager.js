@@ -96,3 +96,45 @@ const FileManager = {
     document.body.removeChild(link);
   }
 };
+
+/**
+ * INTEGRATION WITH REAL BACKGROUND REMOVAL API
+ * 
+ * To use real background removal API (e.g., remove.bg):
+ * 
+ * 1. Sign up at https://www.remove.bg/api
+ * 2. Get your API key
+ * 3. Replace the simulation code in processFile() with:
+ * 
+ * if (fileData.type === 'image') {
+ *   try {
+ *     const formData = new FormData();
+ *     formData.append('image_file', file);
+ *     formData.append('size', 'auto');
+ *     
+ *     const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+ *       method: 'POST',
+ *       headers: {
+ *         'X-Api-Key': 'YOUR_API_KEY_HERE'
+ *       },
+ *       body: formData
+ *     });
+ *     
+ *     if (response.ok) {
+ *       const blob = await response.blob();
+ *       const url = URL.createObjectURL(blob);
+ *       fileData.url = url;
+ *       fileData.bgRemoved = true;
+ *     }
+ *   } catch (error) {
+ *     console.error('Background removal failed:', error);
+ *     // Keep original image if API fails
+ *   }
+ * }
+ * 
+ * Alternative free APIs:
+ * - Pixian.AI: https://pixian.ai/api
+ * - Slazzer: https://www.slazzer.com/api
+ * 
+ * Note: Most APIs have rate limits and require API keys
+ */
