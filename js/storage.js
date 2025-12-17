@@ -17,8 +17,8 @@ const Storage = {
 
   /**
    * Set item to storage
-   * @param {string} key - Storage key
-   * @param {any} value - Value to store
+   * @param {string}
+   * @param {any}
    */
   set(key, value) {
     try {
