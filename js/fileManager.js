@@ -96,8 +96,6 @@ const FileManager = {
     document.body.removeChild(link);
   }
 };
-
-
   if (fileData.type === 'image') {
     try {
       const formData = new FormData();
